@@ -16,8 +16,21 @@ router.post('/generateToken', (req, res) => {
 
     const accessToken = jwt.sign(data, process.env.JWT_SECRET, { expiresIn: '2m' });
     const refreshToken = jwt.sign(data, process.env.JWT_SECRET, { expiresIn: '1h' });
-    res.send(accessToken +' and the refresh token is '+refreshToken);
-})
+    // res.send(accessToken +' and the refresh token is '+refreshToken);
+    res.cookie('access_token', accessToken, {
+        httpOnly:true,
+        secure:true,
+        sameSite:'strict',
+        maxAge:900000
+    });
+    res.cookie('refresh_token', refreshToken, {
+        httpOnly:true,
+        secure:true,
+        sameSite:'strict',
+        maxAge:9000000
+    });
+    res.send("token created successfully");
+});
 
 router.post('/verifyToken', (req, res) => {
     // first get bearer token from header
